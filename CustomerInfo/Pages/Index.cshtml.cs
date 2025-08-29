@@ -25,7 +25,7 @@ namespace CustomerInfo.Pages
         {
             if (!ModelState.IsValid) return Page();
 
-            _excelExportService.AddRecord(Form);
+            _excelExportService.AddRecordAsync(Form);
             //_excelExportService.GenerateExcel(Form);
             TempData["Success"] = "Your information has been saved!";
             return RedirectToPage();

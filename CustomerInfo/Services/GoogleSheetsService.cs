@@ -1,4 +1,6 @@
-﻿using ClosedXML.Excel;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using ClosedXML.Excel;
 using CustomerInfo.Model;
 using DocumentFormat.OpenXml.Presentation;
 using Google.Apis.Auth.OAuth2;
@@ -11,98 +13,85 @@ namespace CustomerInfo.Services
 {
     public class GoogleSheetsService : IExcelExportService
     {
-       
-        private readonly SheetsService _sheetsService;
-        private readonly string _spreadsheetId;
-        private const string SheetName = "CustomerData";
-        private readonly string _filePath;
+
+
+        private readonly string accessKey;
+        private readonly string secretKey;
+        private readonly string region;
+
 
         public GoogleSheetsService(IConfiguration config)
         {
-            var googleCredentialsJson = Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS_JSON");
-            GoogleCredential credential;
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(googleCredentialsJson)))
-            {
-                credential = GoogleCredential.FromStream(stream)
-                    .CreateScoped(SheetsService.Scope.Spreadsheets);
-            }
-
-            var sheetsService = new SheetsService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "Company Registration Form"
-            });
-            var spreadsheetId = Environment.GetEnvironmentVariable("GOOGLE_SPREADSHEET_ID");
-
-
-
-
-
-
-            _sheetsService = new SheetsService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "Company Registration Form"
-            });
-
-
-            _spreadsheetId = spreadsheetId;
+            accessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+            secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+          
         }
-        
 
-        public void AddRecord(FormSubmission form)
+
+
+
+
+
+
+        public async Task AddRecordAsync(FormSubmission form)
         {
-            var range = $"{SheetName}!A:D";
-            var valueRange = new ValueRange();
+            using var s3Client = new AmazonS3Client(accessKey, secretKey, Amazon.RegionEndpoint.EUCentral1);
 
-            var objectList = new List<object>
+            var getRequest = new GetObjectRequest
             {
-                form.FullName,
-                form.PhoneNumber,
-                form.Position,
-                form.Company
+                BucketName = "kiosk-iih-v2",
+                Key = "registrations.xlsx"
             };
 
-            valueRange.Values = new List<IList<object>> { objectList };
+            using var response = await s3Client.GetObjectAsync(getRequest);
+            using var memoryStream = new MemoryStream();
+            await response.ResponseStream.CopyToAsync(memoryStream);
 
-            var appendRequest = _sheetsService.Spreadsheets.Values.Append(valueRange, _spreadsheetId, range);
-            appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
-            appendRequest.Execute();
+            memoryStream.Position = 0; // مهم جداً قبل فتح الـ stream
+            XLWorkbook workbook;
+            try
+            {
+                workbook = new XLWorkbook(memoryStream);
+            }
+            catch
+            {
+                // إذا الملف غير موجود أو فارغ، نعمل واحد جديد
+                workbook = new XLWorkbook();
+            }
+
+            var worksheet = workbook.Worksheets.Any() ? workbook.Worksheet(1) : workbook.AddWorksheet("Submissions");
+
+            int lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
+            int newRow = lastRow + 1;
+
+            if (lastRow == 0)
+            {
+                worksheet.Cell(1, 1).Value = "Full Name";
+                worksheet.Cell(1, 2).Value = "Phone Number";
+                worksheet.Cell(1, 3).Value = "Position";
+                worksheet.Cell(1, 4).Value = "Company";
+                newRow = 2;
+            }
+
+            worksheet.Cell(newRow, 1).Value = form.FullName;
+            worksheet.Cell(newRow, 2).Value = form.PhoneNumber;
+            worksheet.Cell(newRow, 3).Value = form.Position;
+            worksheet.Cell(newRow, 4).Value = form.Company;
+
+            // حفظ التغييرات على S3
+            using var uploadStream = new MemoryStream();
+            workbook.SaveAs(uploadStream);
+            uploadStream.Position = 0;
+
+            var putRequest = new PutObjectRequest
+            {
+                BucketName = "kiosk-iih-v2",
+                Key = "registrations.xlsx",
+                InputStream = uploadStream
+            };
+
+            await s3Client.PutObjectAsync(putRequest);
         }
-
-
-
-
-        //public void AddRecord(FormSubmission form)
-        //{
-        //    // إذا الملف مش موجود نعمل واحد جديد
-        //    using var workbook = System.IO.File.Exists(_filePath)
-        //        ? new XLWorkbook(_filePath)
-        //        : new XLWorkbook();
-
-        //    var worksheet = workbook.Worksheets.Any()
-        //        ? workbook.Worksheet(1)
-        //        : workbook.AddWorksheet("Submissions");
-
-        //    int lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
-        //    int newRow = lastRow + 1;
-
-        //    if (lastRow == 0)
-        //    {
-        //        worksheet.Cell(1, 1).Value = "Full Name";
-        //        worksheet.Cell(1, 2).Value = "Phone Number";
-        //        worksheet.Cell(1, 3).Value = "Position";
-        //        worksheet.Cell(1, 4).Value = "Company";
-        //        newRow = 2;
-        //    }
-
-        //    worksheet.Cell(newRow, 1).Value = form.FullName;
-        //    worksheet.Cell(newRow, 2).Value = form.PhoneNumber;
-        //    worksheet.Cell(newRow, 3).Value = form.Position;
-        //    worksheet.Cell(newRow, 4).Value = form.Company;
-
-        //    workbook.SaveAs(_filePath);
-        //}
     }
 
 

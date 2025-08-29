@@ -6,6 +6,6 @@ namespace CustomerInfo.Services
     {
         //byte[] GenerateExcel(FormSubmission submission);
      
-        void AddRecord(FormSubmission form);
+        Task AddRecordAsync(FormSubmission form);
     }
 }
