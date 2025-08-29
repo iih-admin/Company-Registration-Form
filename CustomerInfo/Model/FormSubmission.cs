@@ -9,8 +9,8 @@ namespace CustomerInfo.Model
         [Required]
         public string PhoneNumber { get; set; } = "";
         [MaxLength(200)]
-        public string Position { get; set; } = "";
+        public string? Position { get; set; } = "";
         [MaxLength(200)]
-        public string Company { get; set; } = "";
+        public string? Company { get; set; } = "";
     }
 }
