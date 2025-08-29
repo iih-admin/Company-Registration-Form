@@ -1,0 +1,232 @@
+﻿:root {
+    --primary: #3F918F;
+    --primary-dark: #3a3c40;
+    --secondary: #7E7E7E;
+    --light: #F8F8F8;
+    --dark: #0F254A;
+    --gradient-gray: linear-gradient(135deg, #fff, #a6a6a6 );
+    --gradient-green: linear-gradient(135deg, #3F918F, #0F254A);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--light);
+    color: var(--dark);
+    overflow-x: hidden;
+}
+
+/* Header Styles */
+header {
+    background: linear-gradient(to left, #a6a6a6 0%, #d9d9d9 30%, #ffffff 100%);
+    color: var(--primary);
+    padding: 0.8rem 5%;
+/*    position: fixed;*/
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.logo-img {
+    height: 75px;
+    width: 250px;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    max-height: 100%;
+    max-width: 100%;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.15));
+    transition: all 0.3s ease;
+}
+
+    .logo img:hover {
+        transform: scale(1.05);
+    }
+
+.logo-mobile {
+    display: none;
+}
+
+
+@media (max-width: 768px) {
+    .logo img {
+        height: 70px;
+    }
+}
+
+@media (max-width: 576px) {
+    .logo img {
+        height: 60px;
+    }
+
+
+    .logo-desktop {
+        display: none;
+    }
+
+    .logo-mobile {
+        display: block;
+        height: 60px;
+    }
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+    .logo-text h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    .logo-text p {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+
+nav {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+    nav ul {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+        margin: 0;
+    }
+
+        nav ul li a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+            nav ul li a:after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--primary);
+                transition: width 0.3s ease;
+            }
+
+            nav ul li a:hover:after,
+            nav ul li a.active:after {
+                width: 100%;
+            }
+
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+
+
+.toast {
+    background: #1a202c;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.5s ease;
+    max-width: 300px;
+    margin-left:auto ;
+}
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .toast.success {
+        background: #16a34a;
+    }
+  
+    .toast.error {
+        background: #dc2626;
+    }
+
+/* Footer */
+footer {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1300px;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.footer-col {
+    flex: 1 1 300px;
+    margin: 20px;
+}
+
+    .footer-col h3 {
+        font-size: 22px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3F918F;
+        display: inline-block;
+        padding-bottom: 5px;
+    }
+
+    .footer-col p {
+        line-height: 1.8;
+    }
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .footer-links li {
+        margin-bottom: 12px;
+    }
+
+    .footer-links a {
+        color: #ccc;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+        .footer-links a:hover {
+            color: #3F918F;
+        }

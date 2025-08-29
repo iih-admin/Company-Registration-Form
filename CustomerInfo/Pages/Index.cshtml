@@ -1,0 +1,55 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Welcome";
+}
+<div id="toast-container" class="fixed top-5 right-5 space-y-3 z-50"></div>
+
+<section style="text-align:center; padding:2rem;">
+    <video autoplay controls  muted  playsinline webkit-playsinline loop style="width:80%; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,.2);">
+        <source src="/videos/intro.mp4" type="video/mp4">
+    </video>
+</section>
+
+<!-- Form Section -->
+<section style="padding:2rem; display:flex; justify-content:center; background:#f9f9f9;">
+    <form method="post" style="background:white; padding:2rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1); width:400px;">
+        <h2 style="color:#349797; margin-bottom:1rem; text-align:center;">Register Your Info</h2>
+
+        <label style="color:#71716F;">Full Name</label>
+        <input asp-for="Form.FullName" class="form-control mb-3 shadow-sm rounded" style="margin-bottom:1rem;" />
+        <span asp-validation-for="Form.FullName" class="text-danger"></span>
+
+        <label style="color:#71716F;">Phone Number</label>
+        <input asp-for="Form.PhoneNumber" class="form-control mb-3 shadow-sm rounded" style="margin-bottom:1rem;" />
+        <span asp-validation-for="Form.PhoneNumber" class="text-danger"></span>
+
+        <label style="color:#71716F;">Position</label>
+        <input asp-for="Form.Position" class="form-control mb-3 shadow-sm rounded" style="margin-bottom:1rem;" />
+        <span asp-validation-for="Form.Position" class="text-danger"></span>
+
+        <label style="color:#71716F;">Company</label>
+        <input asp-for="Form.Company" class="form-control mb-3 shadow-sm rounded" style="margin-bottom:1rem;" />
+        <span asp-validation-for="Form.Company" class="text-danger"></span>
+
+        <button type="submit" style="background:#349797; color:white; border:none; padding:.7rem 1.2rem; border-radius:8px; width:100%; font-weight:bold;">
+            Submit
+        </button>
+
+       
+    </form>
+</section>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mt-3" role="alert">
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mt-3" role="alert">
+        @TempData["Error"]
+    </div>
+}
+
