@@ -15,8 +15,9 @@ namespace CustomerInfo.Services
         public GoogleSheetsService(IConfiguration config)
         {
             // نقرأ مسار ملف الـ JSON من appsettings.json
-            var credentialsPath = config["GoogleSheets:CredentialsPath"];
 
+            var credentialsPath = Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS_PATH")?? config["GoogleSheets:CredentialsPath"];
+            var spreadsheetId = Environment.GetEnvironmentVariable("GOOGLE_SPREADSHEET_ID")?? config["GoogleSheets:SpreadsheetId"];
             GoogleCredential credential;
             using (var stream = new FileStream(credentialsPath, FileMode.Open, FileAccess.Read))
             {
@@ -31,7 +32,7 @@ namespace CustomerInfo.Services
             });
 
             // ID الجدول (من رابط Google Sheet)
-            _spreadsheetId = config["GoogleSheets:SpreadsheetId"];
+            _spreadsheetId = spreadsheetId;
         }
 
         public void AddRecord(FormSubmission form)
