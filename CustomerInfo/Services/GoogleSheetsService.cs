@@ -32,52 +32,43 @@ namespace CustomerInfo.Services
                 HttpClientInitializer = credential,
                 ApplicationName = "Company Registration Form"
             });
-            var spreadsheetId = Environment.GetEnvironmentVariable("GOOGLE_SPREADSHEET_ID") ?? "your-spreadsheet-id";
+            var spreadsheetId = Environment.GetEnvironmentVariable("GOOGLE_SPREADSHEET_ID");
 
-            var valueRange = new ValueRange();
-            valueRange.Values = new List<IList<object>> { new List<object> { "Full Name", "Phone", "Position", "Company" } };
-            var appendRequest = sheetsService.Spreadsheets.Values.Append(valueRange, spreadsheetId, "CustomerData!A:D");
-            appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
-            appendRequest.Execute();
 
-            //var credentialsPath = Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS_PATH")?? config["GoogleSheets:CredentialsPath"];
-            //var spreadsheetId = Environment.GetEnvironmentVariable("GOOGLE_SPREADSHEET_ID")?? config["GoogleSheets:SpreadsheetId"];
-            //GoogleCredential credential;
-            //using (var stream = new FileStream(credentialsPath, FileMode.Open, FileAccess.Read))
-            //{
-            //    credential = GoogleCredential.FromStream(stream)
-            //        .CreateScoped(SheetsService.Scope.Spreadsheets);
-            //}
 
-            //_sheetsService = new SheetsService(new BaseClientService.Initializer()
-            //{
-            //    HttpClientInitializer = credential,
-            //    ApplicationName = "Company Registration Form"
-            //});
+
+
+
+            _sheetsService = new SheetsService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Company Registration Form"
+            });
 
 
             //_spreadsheetId = spreadsheetId;
         }
+        
 
-        //public void AddRecord(FormSubmission form)
-        //{
-        //    var range = $"{SheetName}!A:D"; 
-        //    var valueRange = new ValueRange();
+        public void AddRecord(FormSubmission form)
+        {
+            var range = $"{SheetName}!A:D";
+            var valueRange = new ValueRange();
 
-        //    var objectList = new List<object>
-        //    {
-        //        form.FullName,
-        //        form.PhoneNumber,
-        //        form.Position,
-        //        form.Company
-        //    };
+            var objectList = new List<object>
+            {
+                form.FullName,
+                form.PhoneNumber,
+                form.Position,
+                form.Company
+            };
 
-        //    valueRange.Values = new List<IList<object>> { objectList };
+            valueRange.Values = new List<IList<object>> { objectList };
 
-        //    var appendRequest = _sheetsService.Spreadsheets.Values.Append(valueRange, _spreadsheetId, range);
-        //    appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
-        //    appendRequest.Execute();
-        //}
+            var appendRequest = _sheetsService.Spreadsheets.Values.Append(valueRange, _spreadsheetId, range);
+            appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
+            appendRequest.Execute();
+        }
 
 
 
